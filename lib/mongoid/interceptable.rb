@@ -254,12 +254,8 @@ module Mongoid
           chain.append(callback) if callback.kind == place
         end
         self.class.send :define_method, name do
-          env = ActiveSupport::Callbacks::Filters::Environment.new(self, false, nil)
-          sequence = chain.compile
-          sequence.invoke_before(env)
-          env.value = !env.halted
-          sequence.invoke_after(env)
-          env.value
+          runner = ActiveSupport::Callbacks::Filters::Environment.new(self, false, nil)
+          chain.compile.call(runner).value
         end
         self.class.send :protected, name
       end
